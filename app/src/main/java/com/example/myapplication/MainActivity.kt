@@ -28,7 +28,7 @@ class MainActivity : AppCompatActivity() {
         // insert into the history list
         val list = findViewById<ListView>(R.id.historyList)
 
-        uiScope.launch {
+        /*uiScope.launch {
             val conncetHistory = getlist()
             val adapter: ArrayAdapter<String>
             if (conncetHistory != null) {
@@ -39,7 +39,7 @@ class MainActivity : AppCompatActivity() {
                         conncetHistory.toList()
                     )
             }
-        }
+        }*/
     }
 
     suspend fun getlist(): List<String> {
