@@ -28,8 +28,8 @@ abstract class ListDatabase : RoomDatabase() {
         private fun newDatabase(context: Context): ListDatabase {
             return Room.databaseBuilder(
                 context.applicationContext,
-                ListDatabase::class.java,
-                "url_history").fallbackToDestructiveMigration().build()
+                ListDatabase::class.java, "url_history"
+            ).fallbackToDestructiveMigration().build()
         }
     }
 }

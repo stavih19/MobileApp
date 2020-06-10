@@ -5,7 +5,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity(tableName = "urls_table")
-class UrlAddressList {
+class UrlAddressList() {
     @PrimaryKey(autoGenerate = true)
     var id: Long = 0L
 
