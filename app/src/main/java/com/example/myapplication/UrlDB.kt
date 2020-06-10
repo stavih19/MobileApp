@@ -9,7 +9,7 @@ interface UrlDB {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun insert(url: UrlAddressList)
 
-    @Query("SELECT urlString from urls_table order by urlString desc limit 5")
+    @Query("SELECT urlString from urls_table order by id desc limit 5")
     fun getLastFive(): List<String>
 
     @Query("DELETE FROM urls_table")

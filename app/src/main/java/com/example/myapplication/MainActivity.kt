@@ -43,7 +43,16 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun tryConnect(view: View) {
+        val newUrl = findViewById<TextView>(R.id.urlinput)
+        val obj = UrlAddressList()
+        obj.url = newUrl.text.toString()
+        Room.databaseBuilder(this, ListDatabase::class.java, "url_history")
+            .allowMainThreadQueries().build().urlDatabase.insert(obj)
 
+        // connect
+
+        finish()
+        startActivity(intent)
     }
 
     private fun displayNavigationScreen() {
