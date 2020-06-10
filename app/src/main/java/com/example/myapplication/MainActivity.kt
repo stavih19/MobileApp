@@ -56,7 +56,9 @@ class MainActivity : AppCompatActivity() {
 
         val apiURL = URL("https://localhost:44354/api/Connect")
 
-        val conncetHistory = ListDatabase.getInsatnce(this).urlDatabase.insert(url)
+        var urlObj = UrlAddressList()
+        urlObj.url = url
+        val conncetHistory = ListDatabase.getInsatnce(this).urlDatabase.insert(urlObj)
 
         finish()
         startActivity(intent)
