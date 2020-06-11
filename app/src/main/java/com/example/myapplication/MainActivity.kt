@@ -3,13 +3,16 @@ package com.example.myapplication
 
 import android.os.Bundle
 import android.widget.EditText
-import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import io.github.controlwear.virtual.joystick.android.JoystickView
+import io.github.controlwear.virtual.joystick.android.JoystickView.OnMoveListener
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.launch
-import com.example.myapplication.*
+import kotlin.math.PI
+import kotlin.math.cos
+import kotlin.math.sin
 
 
 class MainActivity : AppCompatActivity() {
@@ -23,11 +26,6 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
-        tvIsConnected = findViewById<TextView>(R.id.tvIsConnected)
-        etTitle = findViewById<EditText>(R.id.etTitle)
-        etUrl = findViewById<EditText>(R.id.etUrl)
-        etTags = findViewById<EditText>(R.id.etTags)
         tvResult = findViewById<TextView>(R.id.tvResult)
 
 
@@ -37,7 +35,16 @@ class MainActivity : AppCompatActivity() {
             postCommand(1.0,1.0,1.0,1.0)
         }
 
+        //val joystick = joystickView as JoystickView
 
+
+        val joystick = joystickView as JoystickView
+        joystick.setOnMoveListener { angle, strength ->
+            val inRadians = angle * PI / 180.0
+            val x = cos(inRadians)*strength/100.0
+            val y = sin(inRadians)*strength/100.0
+            println("angle $angle strength $strength x $x y $y")
+        }
     }
 
 
