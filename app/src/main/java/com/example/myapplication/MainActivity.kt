@@ -1,6 +1,7 @@
 package com.example.myapplication
 
 import android.content.Context
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
@@ -51,8 +52,12 @@ class MainActivity : AppCompatActivity() {
 
         // connect
 
-        finish()
+        // in case we did connect
+        val intent = Intent(this, ControlActivity::class.java)
         startActivity(intent)
+
+        /*finish()
+        startActivity(intent)*/
     }
 
     private fun displayNavigationScreen() {
