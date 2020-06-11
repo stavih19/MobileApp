@@ -61,4 +61,6 @@ dependencies {
 // Testing
     testImplementation 'junit:junit:4.12'
     androidTestImplementation "androidx.arch.core:core-testing:$rootProject.coreTestingVersion"
+
+    implementation 'com.ramotion.fluidslider:fluid-slider:0.3.1'
 }

@@ -1,6 +1,5 @@
 package com.example.myapplication
 
-import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -8,11 +7,6 @@ import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.ListView
 import android.widget.TextView
-import java.net.URL
-import android.os.Build
-import android.widget.Toast
-import androidx.annotation.RequiresApi
-import androidx.appcompat.view.menu.ListMenuItemView
 import androidx.room.Room
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.CoroutineScope
@@ -55,9 +49,6 @@ class MainActivity : AppCompatActivity() {
         // in case we did connect
         val intent = Intent(this, ControlActivity::class.java)
         startActivity(intent)
-
-        /*finish()
-        startActivity(intent)*/
     }
 
     private fun displayNavigationScreen() {
