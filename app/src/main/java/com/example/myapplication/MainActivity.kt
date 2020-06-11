@@ -1,15 +1,18 @@
 package com.example.myapplication
+
 import android.content.Context
+import android.graphics.BitmapFactory
 import android.net.ConnectivityManager
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
-import com.example.myapplication.R
+import com.squareup.picasso.Picasso
+import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -20,7 +23,6 @@ import java.io.IOException
 import java.io.OutputStreamWriter
 import java.net.HttpURLConnection
 import java.net.URL
-import javax.net.ssl.HttpsURLConnection
 
 
 class MainActivity : AppCompatActivity() {
@@ -42,8 +44,44 @@ class MainActivity : AppCompatActivity() {
         tvResult = findViewById<TextView>(R.id.tvResult)
 
         checkNetworkConnection()
+
+
+
+    }
+    public fun getScreenshot(view:View) {
+        if (checkNetworkConnection())
+            lifecycleScope.launch {
+                val result = httpGet("http://10.0.2.2:65011/screenshot")
+                tvResult.setText(result)
+            }
+        else
+            Toast.makeText(this, "Not Connected!", Toast.LENGTH_SHORT).show()
     }
 
+    @Throws(IOException::class, JSONException::class)
+    private  fun httpGet(myUrl: String): String {
+
+
+        Picasso.get().load("http://10.0.2.2:65011/screenshot").into(imageView);
+        /*val result = withContext(Dispatchers.IO) {
+            val url = URL(myUrl)
+            // 1. create HttpURLConnection
+            val conn = url.openConnection() as HttpURLConnection
+            conn.requestMethod = "GET"
+            conn.setRequestProperty("Content-Type", "application/jpeg; charset=utf-8")
+
+
+
+            // 4. make POST request to the given URL
+            conn.connect()
+
+            // 5. return response message
+            conn.responseMessage + ""
+        }
+        return result
+        */
+        return ""
+    }
     public fun send(view:View) {
         Toast.makeText(this, "Clicked", Toast.LENGTH_SHORT).show()
         // clear text result
