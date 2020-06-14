@@ -13,9 +13,6 @@ import kotlinx.coroutines.launch
 
 
 class MainActivity : AppCompatActivity() {
-    /*lifecycleScope.launch {
-        val result = getScreenshot(iv)
-    }*/
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -43,15 +40,9 @@ class MainActivity : AppCompatActivity() {
         Room.databaseBuilder(this, ListDatabase::class.java, "url_history")
             .allowMainThreadQueries().build().urlDatabase.insert(obj)
 
-        // connect
-
         // in case we did connect
         val intent = Intent(this, ControlActivity::class.java)
         startActivity(intent)
-    }
-
-    private fun displayNavigationScreen() {
-
     }
 
     fun clearFiled(view: View): Unit {
