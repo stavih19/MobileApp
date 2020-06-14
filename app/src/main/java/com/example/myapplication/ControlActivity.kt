@@ -12,6 +12,7 @@ import androidx.lifecycle.lifecycleScope
 import com.ramotion.fluidslider.FluidSlider
 import io.github.controlwear.virtual.joystick.android.JoystickView
 import kotlinx.android.synthetic.main.activity_control.*
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.math.PI
 import kotlin.math.abs
@@ -20,70 +21,109 @@ import kotlin.math.sin
 import kotlin.reflect.KParameter
 
 class ControlActivity : AppCompatActivity() {
-    val prevThrottle: Float = 0.0F;
+    var prevThrottle: Float = 0.0f;
+    var prevRudder: Float = 0.0F;
+    var prevAliaron: Float = 0.0F;
+    var prevElevator: Float = 0.0F;
+
     @SuppressLint("WrongViewCast")
     override fun onCreate(savedInstanceState: Bundle?) {
-
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_control)
 
-        val maxhorizon = 1
-        val minhorizon = -1
-        val totalhorizon = maxhorizon - minhorizon
+        // initial Rudder slider
+        val maxRudder = 1
+        val minRudder = -1
+        val totalRudder = maxRudder - minRudder
 
-        val sliderhorizon = findViewById<FluidSlider>(R.id.horizon_slider)
-        sliderhorizon.colorBar = Color.BLUE
-        sliderhorizon.positionListener = { pos ->
-            var newVal = "${minhorizon + (totalhorizon * pos)}"
-            if (newVal.toFloat() != 1.toFloat()) {
+        val rudderSlider = findViewById<FluidSlider>(R.id.rudder_slider)
+        rudderSlider.colorBar = Color.BLUE
+        rudderSlider.positionListener = { pos ->
+            val newRudder = minRudder + (totalRudder * pos)
+            var newVal = "${newRudder}"
+            if (newRudder != 1.toFloat() && newRudder != 0.toFloat()) {
                 newVal = newVal.substring(0, 4)
             }
-            sliderhorizon.bubbleText = newVal
-
+            rudderSlider.bubbleText = newVal
+            if (abs(newRudder - prevRudder) > 0.02) {
+                prevRudder = newRudder
+                sendValues()
+            }
         }
-        sliderhorizon.position = 0.3f
-        sliderhorizon.startText = "$minhorizon"
-        sliderhorizon.endText = "$maxhorizon"
+        rudderSlider.position = 0.5f
+        rudderSlider.startText = "$minRudder"
+        rudderSlider.endText = "$maxRudder"
 
-        val maxvertical = 1
-        val minvertical = -1
-        val totalvertical = maxvertical - minvertical
+        // initial Throttle slider
+        val maxThrottle = 0
+        val minThrottle = 1
+        val totalThrotle = maxThrottle - minThrottle
 
-        val slidervertical = findViewById<FluidSlider>(R.id.vertical_slider)
+        val slidervertical = findViewById<FluidSlider>(R.id.throttle_slider)
         slidervertical.colorBar = Color.BLUE
         slidervertical.positionListener = { pos ->
-            var newVal = "${minvertical + (totalvertical * pos).toFloat()}"
-            if (newVal.toFloat() != 1.toFloat()) {
+            val newThrotle = minThrottle + (totalThrotle * pos)
+            var newVal = "${newThrotle}"
+            if (newThrotle != 1.toFloat() && newThrotle != 0.toFloat()) {
                 newVal = newVal.substring(0, 4)
             }
             slidervertical.bubbleText = newVal
-
-            //TODO compare 1% prev value
-
-            lifecycleScope.launch {
-                postCommand(0.0,1.0,0.0,1.0)
+            if (abs(newThrotle - prevThrottle) > 0.01) {
+                prevThrottle = newThrotle
+                sendValues()
             }
 
         }
-        slidervertical.position = 0.3f
-        slidervertical.startText = "$minvertical"
-        slidervertical.endText = "$maxvertical"
+        slidervertical.position = 1.0f
+        slidervertical.startText = "$minThrottle"
+        slidervertical.endText = "$maxThrottle"
 
-        //joystick
+        // initial joystick
         val joystick = joystickView as JoystickView
         joystick.setOnMoveListener { angle, strength ->
             val inRadians = angle * PI / 180.0
-            val alieron = cos(inRadians) *strength/100.0
-            val elevator = sin(inRadians) *strength/100.0
-            //TODO compare 1% prev value
-            lifecycleScope.launch {
-                postCommand(0.0,1.0,0.0,1.0)
+            val newAlieron = (cos(inRadians) * strength / 100.0).toFloat()
+            val newElevator = (sin(inRadians) * strength / 100.0).toFloat()
+            var sendFlag = false
+            if (abs(prevAliaron - newAlieron) > 0.01) {
+                prevAliaron = newAlieron
+                sendFlag = true
             }
+            if (abs(prevElevator - newElevator) > 0.01) {
+                prevElevator = newElevator
+                sendFlag = true
+            }
+            if (sendFlag) {
+                sendValues()
+            }
+        }
+
+        // start the endless loop
+        getImage()
+    }
+
+    fun sendValues() {
+        lifecycleScope.launch {
+            postCommand(
+                prevAliaron.toDouble(),
+                prevRudder.toDouble(),
+                prevElevator.toDouble(),
+                prevThrottle.toDouble()
+            )
         }
     }
 
     override fun onBackPressed() {
         val intent = Intent(this, MainActivity::class.java)
         startActivity(intent)
+    }
+
+    fun getImage() {
+        lifecycleScope.launch {
+            while (true) {
+                val result = getScreenshot(flight_simulator_image)
+                delay(250);
+            }
+        }
     }
 }

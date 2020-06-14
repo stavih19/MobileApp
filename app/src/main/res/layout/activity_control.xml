@@ -19,7 +19,7 @@
         tools:srcCompat="@tools:sample/avatars" />
 
     <com.ramotion.fluidslider.FluidSlider
-        android:id="@+id/horizon_slider"
+        android:id="@+id/rudder_slider"
         android:layout_width="250dp"
         android:layout_height="137dp"
         android:layout_marginStart="120dp"
@@ -30,7 +30,7 @@
         tools:ignore="MissingConstraints" />
 
     <com.ramotion.fluidslider.FluidSlider
-        android:id="@+id/vertical_slider"
+        android:id="@+id/throttle_slider"
         android:layout_width="252dp"
         android:layout_height="139dp"
         android:layout_marginBottom="150dp"
@@ -52,6 +52,6 @@
         app:JV_buttonColor="#FF6E40"
         app:JV_buttonSizeRatio="15%"
         app:JV_fixedCenter="false"
-        app:layout_constraintBottom_toBottomOf="@+id/horizon_slider"
-        app:layout_constraintStart_toStartOf="@+id/vertical_slider" />
+        app:layout_constraintBottom_toBottomOf="@+id/rudder_slider"
+        app:layout_constraintStart_toStartOf="@+id/throttle_slider" />
 </androidx.constraintlayout.widget.ConstraintLayout>

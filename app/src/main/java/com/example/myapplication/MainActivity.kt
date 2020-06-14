@@ -13,9 +13,9 @@ import kotlinx.coroutines.launch
 
 
 class MainActivity : AppCompatActivity() {
-    lifecycleScope.launch {
+    /*lifecycleScope.launch {
         val result = getScreenshot(iv)
-    }
+    }*/
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -34,9 +34,6 @@ class MainActivity : AppCompatActivity() {
             val url = findViewById<TextView>(R.id.urlinput)
             url.text = list.getItemAtPosition(position).toString()
         }
-
-
-
     }
 
     fun tryConnect(view: View) {
