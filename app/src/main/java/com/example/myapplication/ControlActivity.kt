@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.ImageView
 import com.ramotion.fluidslider.FluidSlider
+import kotlin.math.abs
 import kotlin.reflect.KParameter
 
 class ControlActivity : AppCompatActivity() {
@@ -23,27 +24,32 @@ class ControlActivity : AppCompatActivity() {
 
         val sliderhorizon = findViewById<FluidSlider>(R.id.horizon_slider)
         sliderhorizon.colorBar = Color.BLUE
-        sliderhorizon.positionListener =
-            { pos ->
-                sliderhorizon.bubbleText =
-                    "${minhorizon + (totalhorizon * pos).toFloat()}".substring(0, 4)
+        sliderhorizon.positionListener = { pos ->
+            var newVal = "${minhorizon + (totalhorizon * pos)}"
+            if (newVal.toFloat() != 1.toFloat()) {
+                newVal = newVal.substring(0, 4)
             }
+            sliderhorizon.bubbleText = newVal
+
+        }
         sliderhorizon.position = 0.3f
         sliderhorizon.startText = "$minhorizon"
         sliderhorizon.endText = "$maxhorizon"
 
-        // Kotlin
         val maxvertical = 1
         val minvertical = -1
         val totalvertical = maxvertical - minvertical
 
-        val slidervertical = findViewById<FluidSlider>(R.id.horizon_slider)
+        val slidervertical = findViewById<FluidSlider>(R.id.vertical_slider)
         slidervertical.colorBar = Color.BLUE
-        slidervertical.positionListener =
-            { pos ->
-                slidervertical.bubbleText =
-                    "${minvertical + (totalvertical * pos).toFloat()}".substring(0, 4)
+        slidervertical.positionListener = { pos ->
+            var newVal = "${minvertical + (totalvertical * pos).toFloat()}"
+            if (newVal.toFloat() != 1.toFloat()) {
+                newVal = newVal.substring(0, 4)
             }
+            slidervertical.bubbleText = newVal
+
+        }
         slidervertical.position = 0.3f
         slidervertical.startText = "$minvertical"
         slidervertical.endText = "$maxvertical"
