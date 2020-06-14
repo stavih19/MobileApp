@@ -8,9 +8,11 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.ImageView
+import androidx.lifecycle.lifecycleScope
 import com.ramotion.fluidslider.FluidSlider
 import io.github.controlwear.virtual.joystick.android.JoystickView
 import kotlinx.android.synthetic.main.activity_control.*
+import kotlinx.coroutines.launch
 import kotlin.math.PI
 import kotlin.math.abs
 import kotlin.math.cos
@@ -18,8 +20,10 @@ import kotlin.math.sin
 import kotlin.reflect.KParameter
 
 class ControlActivity : AppCompatActivity() {
+    val prevThrottle: Float = 0.0F;
     @SuppressLint("WrongViewCast")
     override fun onCreate(savedInstanceState: Bundle?) {
+
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_control)
 
@@ -54,6 +58,12 @@ class ControlActivity : AppCompatActivity() {
             }
             slidervertical.bubbleText = newVal
 
+            //TODO compare 1% prev value
+
+            lifecycleScope.launch {
+                postCommand(0.0,1.0,0.0,1.0)
+            }
+
         }
         slidervertical.position = 0.3f
         slidervertical.startText = "$minvertical"
@@ -63,9 +73,12 @@ class ControlActivity : AppCompatActivity() {
         val joystick = joystickView as JoystickView
         joystick.setOnMoveListener { angle, strength ->
             val inRadians = angle * PI / 180.0
-            val x = cos(inRadians) *strength/100.0
-            val y = sin(inRadians) *strength/100.0
-            println("angle $angle strength $strength x $x y $y")
+            val alieron = cos(inRadians) *strength/100.0
+            val elevator = sin(inRadians) *strength/100.0
+            //TODO compare 1% prev value
+            lifecycleScope.launch {
+                postCommand(0.0,1.0,0.0,1.0)
+            }
         }
     }
 
