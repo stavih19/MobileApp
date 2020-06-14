@@ -22,9 +22,9 @@ import kotlin.reflect.KParameter
 
 class ControlActivity : AppCompatActivity() {
     var prevThrottle: Float = 0.0f;
-    var prevRudder: Float = 0.0F;
-    var prevAliaron: Float = 0.0F;
-    var prevElevator: Float = 0.0F;
+    var prevRudder: Float = 0.0f;
+    var prevAliaron: Float = 0.0f;
+    var prevElevator: Float = 0.0f;
 
     @SuppressLint("WrongViewCast")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,7 +45,7 @@ class ControlActivity : AppCompatActivity() {
                 newVal = newVal.substring(0, 4)
             }
             rudderSlider.bubbleText = newVal
-            if (abs(newRudder - prevRudder) > 0.02) {
+            if (abs(newRudder - prevRudder) >= 0.02) {
                 prevRudder = newRudder
                 sendValues()
             }
@@ -62,14 +62,14 @@ class ControlActivity : AppCompatActivity() {
         val slidervertical = findViewById<FluidSlider>(R.id.throttle_slider)
         slidervertical.colorBar = Color.BLUE
         slidervertical.positionListener = { pos ->
-            val newThrotle = minThrottle + (totalThrotle * pos)
-            var newVal = "${newThrotle}"
-            if (newThrotle != 1.toFloat() && newThrotle != 0.toFloat()) {
+            val newThrottle = minThrottle + (totalThrotle * pos)
+            var newVal = "${newThrottle}"
+            if (newThrottle != 1.toFloat() && newThrottle != 0.toFloat()) {
                 newVal = newVal.substring(0, 4)
             }
             slidervertical.bubbleText = newVal
-            if (abs(newThrotle - prevThrottle) > 0.01) {
-                prevThrottle = newThrotle
+            if (abs(newThrottle - prevThrottle) >= 0.01) {
+                prevThrottle = newThrottle
                 sendValues()
             }
 
@@ -85,11 +85,11 @@ class ControlActivity : AppCompatActivity() {
             val newAlieron = (cos(inRadians) * strength / 100.0).toFloat()
             val newElevator = (sin(inRadians) * strength / 100.0).toFloat()
             var sendFlag = false
-            if (abs(prevAliaron - newAlieron) > 0.01) {
+            if (abs(prevAliaron - newAlieron) >= 0.01) {
                 prevAliaron = newAlieron
                 sendFlag = true
             }
-            if (abs(prevElevator - newElevator) > 0.01) {
+            if (abs(prevElevator - newElevator) >= 0.01) {
                 prevElevator = newElevator
                 sendFlag = true
             }
