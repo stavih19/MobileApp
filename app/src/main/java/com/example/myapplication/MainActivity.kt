@@ -8,12 +8,7 @@ import android.widget.ArrayAdapter
 import android.widget.ListView
 import android.widget.TextView
 import androidx.room.Room
-import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
-import org.json.JSONObject
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -35,6 +30,8 @@ class MainActivity : AppCompatActivity() {
             val url = findViewById<TextView>(R.id.urlinput)
             url.text = list.getItemAtPosition(position).toString()
         }
+
+
     }
 
     fun tryConnect(view: View) {
