@@ -25,9 +25,9 @@ import java.io.OutputStreamWriter
 import java.net.HttpURLConnection
 import java.net.URL
 
-fun getScreenshot(imageView: ImageView): Boolean {
+fun getScreenshot(imageView: ImageView, url: String): Boolean {
     //TODO check fail
-    Picasso.get().load("http://10.0.2.2:65011/screenshot").into(imageView)
+    Picasso.get().load(url + "/screenshot").into(imageView)
     return true
 }
 

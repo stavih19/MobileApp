@@ -105,10 +105,10 @@ class ControlActivity : AppCompatActivity() {
     fun sendValues() {
         lifecycleScope.launch {
             postCommand(
-                prevAliaron.toDouble(),
-                prevRudder.toDouble(),
-                prevElevator.toDouble(),
-                prevThrottle.toDouble()
+                (prevAliaron*100).toInt().toDouble()/100.0,
+                (prevRudder*100).toInt().toDouble()/100.0,
+                (prevElevator*100).toInt().toDouble()/100.0,
+                (prevThrottle*100).toInt().toDouble()/100.0
             )
         }
     }
@@ -121,7 +121,7 @@ class ControlActivity : AppCompatActivity() {
     fun getImage() {
         lifecycleScope.launch {
             while (true) {
-                val result = getScreenshot(flight_simulator_image)
+                val result = getScreenshot(flight_simulator_image, )
                 delay(250);
             }
         }
