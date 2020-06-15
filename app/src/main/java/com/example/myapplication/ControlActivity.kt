@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.ImageView
 import androidx.lifecycle.lifecycleScope
+import androidx.room.Room
 import com.ramotion.fluidslider.FluidSlider
 import io.github.controlwear.virtual.joystick.android.JoystickView
 import kotlinx.android.synthetic.main.activity_control.*
@@ -26,10 +27,17 @@ class ControlActivity : AppCompatActivity() {
     var prevAliaron: Float = 0.0f;
     var prevElevator: Float = 0.0f;
 
+    var url: String = ""
+
     @SuppressLint("WrongViewCast")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_control)
+
+        // get the url address
+        val connectHitsory = Room.databaseBuilder(this, ListDatabase::class.java, "url_history")
+            .allowMainThreadQueries().build().urlDatabase.getLastFive()
+        url = connectHitsory.get(0)
 
         // initial Rudder slider
         val maxRudder = 1
@@ -103,12 +111,13 @@ class ControlActivity : AppCompatActivity() {
     }
 
     fun sendValues() {
+        val a = prevAliaron
         lifecycleScope.launch {
             postCommand(
-                (prevAliaron*100).toInt().toDouble()/100.0,
-                (prevRudder*100).toInt().toDouble()/100.0,
-                (prevElevator*100).toInt().toDouble()/100.0,
-                (prevThrottle*100).toInt().toDouble()/100.0
+                (prevAliaron * 100).toInt().toDouble() / 100.0,
+                (prevRudder * 100).toInt().toDouble() / 100.0,
+                (prevElevator * 100).toInt().toDouble() / 100.0,
+                (prevThrottle * 100).toInt().toDouble() / 100.0
             )
         }
     }
@@ -121,7 +130,7 @@ class ControlActivity : AppCompatActivity() {
     fun getImage() {
         lifecycleScope.launch {
             while (true) {
-                val result = getScreenshot(flight_simulator_image, )
+                val result = getScreenshot(flight_simulator_image, url)
                 delay(250);
             }
         }

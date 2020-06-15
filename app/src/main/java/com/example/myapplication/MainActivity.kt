@@ -9,6 +9,8 @@ import android.widget.ListView
 import android.widget.TextView
 import androidx.lifecycle.lifecycleScope
 import androidx.room.Room
+import kotlinx.android.synthetic.main.activity_control.*
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 
@@ -22,6 +24,7 @@ class MainActivity : AppCompatActivity() {
 
         var conncetHistory = Room.databaseBuilder(this, ListDatabase::class.java, "url_history")
             .allowMainThreadQueries().build().urlDatabase.getLastFive()
+
         conncetHistory = conncetHistory.asReversed()
         val adapter: ArrayAdapter<String>
         adapter =
@@ -37,6 +40,13 @@ class MainActivity : AppCompatActivity() {
         val newUrl = findViewById<TextView>(R.id.urlinput)
         val obj = UrlAddressList()
         obj.url = newUrl.text.toString()
+
+        var conncetHistory = Room.databaseBuilder(this, ListDatabase::class.java, "url_history")
+            .allowMainThreadQueries().build().urlDatabase.getLastFive()
+
+        Room.databaseBuilder(this, ListDatabase::class.java, "url_history")
+            .allowMainThreadQueries().build().urlDatabase.deleteByUrl(obj.url)
+
         Room.databaseBuilder(this, ListDatabase::class.java, "url_history")
             .allowMainThreadQueries().build().urlDatabase.insert(obj)
 

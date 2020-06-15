@@ -60,11 +60,6 @@ suspend fun postCommand(aileron:Double, rudder:Double, elevator:Double, throttle
     return false
 }
 
-
-
-
-
-
 @Throws(JSONException::class)
 fun buidJsonObject(aileron:Double, rudder:Double, elevator:Double, throttle:Double)
         : JSONObject {

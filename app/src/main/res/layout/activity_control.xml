@@ -54,4 +54,5 @@
         app:JV_fixedCenter="false"
         app:layout_constraintBottom_toBottomOf="@+id/rudder_slider"
         app:layout_constraintStart_toStartOf="@+id/throttle_slider" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

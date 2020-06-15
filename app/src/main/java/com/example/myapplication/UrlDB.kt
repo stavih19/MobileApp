@@ -12,6 +12,9 @@ interface UrlDB {
     @Query("SELECT urlString from urls_table order by id desc limit 5")
     fun getLastFive(): List<String>
 
+    @Query("DELETE FROM urls_table WHERE urls_table.urlString=:url")
+    fun deleteByUrl(url: String)
+
     @Query("DELETE FROM urls_table")
     fun deleteAll()
 }
