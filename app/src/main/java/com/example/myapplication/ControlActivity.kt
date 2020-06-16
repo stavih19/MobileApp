@@ -2,6 +2,7 @@ package com.example.myapplication
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.media.Image
 import androidx.appcompat.app.AppCompatActivity
@@ -14,13 +15,18 @@ import androidx.core.view.isGone
 import androidx.core.view.isInvisible
 import androidx.lifecycle.lifecycleScope
 import androidx.room.Room
+import com.google.gson.GsonBuilder
 import com.ramotion.fluidslider.FluidSlider
 import io.github.controlwear.virtual.joystick.android.JoystickView
 import kotlinx.android.synthetic.main.activity_control.*
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withTimeout
-import kotlinx.coroutines.withTimeoutOrNull
+import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers.IO
+import okhttp3.ResponseBody
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 import kotlin.math.PI
 import kotlin.math.abs
 import kotlin.math.cos
@@ -153,11 +159,32 @@ class ControlActivity : AppCompatActivity() {
     fun getImage() {
         var switch = 1
         var stopFlag = false
-        lifecycleScope.launch {
+        CoroutineScope(IO).launch {
             while (!stopFlag) {
 
-                var result = false
-                result = getScreenshot(flight_simulator_image, url)
+                var result = true
+//                result = getScreenshot(flight_simulator_image, url)
+
+                val gson = GsonBuilder()
+                    .setLenient()
+                    .create()
+                val retrofit = Retrofit.Builder()
+                    .baseUrl("$url/")
+                    .addConverterFactory(GsonConverterFactory.create(gson))
+                    .build()
+                val api = retrofit.create(Api::class.java)
+                val body = api.getImg().enqueue(object : Callback<ResponseBody> {
+                    override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>){
+                        val I = response?.body()?.byteStream()
+                        val B = BitmapFactory.decodeStream(I)
+                        runOnUiThread {
+                            flight_simulator_image.setImageBitmap(B)
+                        }
+                    }
+                    override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+
+                    }
+                })
 
                 if (!result) {
                     stopFlag = true

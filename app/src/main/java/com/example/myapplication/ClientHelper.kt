@@ -1,16 +1,25 @@
 package com.example.myapplication
 
 import android.R
+import android.graphics.BitmapFactory
 import android.graphics.drawable.Drawable
 import android.util.Log
 import android.widget.ImageView
+import com.google.gson.GsonBuilder
 import com.squareup.picasso.MemoryPolicy
 import com.squareup.picasso.NetworkPolicy
 import com.squareup.picasso.Picasso
+import kotlinx.android.synthetic.main.activity_control.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import okhttp3.ResponseBody
 import org.json.JSONException
 import org.json.JSONObject
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 import java.io.BufferedWriter
 import java.io.IOException
 import java.io.OutputStreamWriter
@@ -19,13 +28,24 @@ import java.net.URL
 
 
 fun getScreenshot(imageView: ImageView, url: String): Boolean {
-    //TODO check fail
-    val token = (Math.random()*100000).toInt()
-    val p = Picasso.get().load(url + "/screenshot").memoryPolicy(MemoryPolicy.NO_CACHE).networkPolicy(
-        NetworkPolicy.NO_CACHE).noFade().placeholder(imageView.drawable).into(imageView)
+    val gson = GsonBuilder()
+        .setLenient()
+        .create()
+    val retrofit = Retrofit.Builder()
+        .baseUrl("$url/")
+        .addConverterFactory(GsonConverterFactory.create(gson))
+        .build()
+    val api = retrofit.create(Api::class.java)
+    val body = api.getImg().enqueue(object : Callback<ResponseBody> {
+        override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>){
+            val I = response?.body()?.byteStream()
+            val B = BitmapFactory.decodeStream(I)
+            imageView.setImageBitmap(B)
+        }
+        override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
 
-    ControlActivity::getImage
-
+        }
+    })
     return true
 }
 

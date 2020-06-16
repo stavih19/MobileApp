@@ -2,6 +2,7 @@ package com.example.myapplication
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.graphics.BitmapFactory
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
@@ -11,15 +12,41 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import androidx.room.Room
+import com.google.gson.GsonBuilder
 import kotlinx.android.synthetic.main.activity_control.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import okhttp3.ResponseBody
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         // insert into the history list
         val list = findViewById<ListView>(R.id.historyList)
@@ -36,6 +63,7 @@ class MainActivity : AppCompatActivity() {
             val url = findViewById<TextView>(R.id.urlinput)
             url.text = list.getItemAtPosition(position).toString()
         }
+
     }
 
     @SuppressLint("WrongConstant", "ShowToast")
