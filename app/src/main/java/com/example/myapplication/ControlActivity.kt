@@ -34,6 +34,8 @@ class ControlActivity : AppCompatActivity() {
     var prevElevator: Float = 0.0f
 
     var url: String = ""
+    var stopFlag = false
+    var status: Boolean? = false
 
     @SuppressLint("WrongViewCast")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -62,6 +64,7 @@ class ControlActivity : AppCompatActivity() {
             if (abs(newRudder - prevRudder) >= 0.02) {
                 prevRudder = newRudder
                 sendValues()
+                checkStatus()
             }
         }
         rudderSlider.position = 0.5f
@@ -85,6 +88,7 @@ class ControlActivity : AppCompatActivity() {
             if (abs(newThrottle - prevThrottle) >= 0.01) {
                 prevThrottle = newThrottle
                 sendValues()
+                checkStatus()
             }
 
         }
@@ -109,17 +113,17 @@ class ControlActivity : AppCompatActivity() {
             }
             if (sendFlag) {
                 sendValues()
+                checkStatus()
             }
         }
-
 
         // start the endless loop
         getImage()
     }
 
-    @SuppressLint("WrongConstant", "ShowToast")
+    @SuppressLint("WrongConstant", "ShowToast", "SetTextI18n")
     fun sendValues() = lifecycleScope.launch {
-        val status = withTimeoutOrNull(10000) {
+        status = withTimeoutOrNull(10000) {
             postCommand(
                 (prevAliaron * 100).toInt().toDouble() / 100.0,
                 (prevRudder * 100).toInt().toDouble() / 100.0,
@@ -127,8 +131,17 @@ class ControlActivity : AppCompatActivity() {
                 (prevThrottle * 100).toInt().toDouble() / 100.0
             )
         }
-        if (status == null) {
-            Toast.makeText(this@ControlActivity, "the server is delay", 5).show()
+    }
+
+    @SuppressLint("SetTextI18n")
+    fun checkStatus() {
+        if (status == null) { // 10 seconds timeout case
+            massage.text = "the server has failed"
+            stopFlag = true
+        }
+        if (status == false) { // couldn't send the values
+            massage.text = "server problem accrued"
+            stopFlag = true
         }
     }
 
@@ -162,6 +175,8 @@ class ControlActivity : AppCompatActivity() {
                     stopFlag = true
                 }
 
+                delay(300)
+
                 if (stopFlag) { // TODO handle the returned result
                     throttle_slider.visibility = View.INVISIBLE
                     rudder_slider.visibility = View.INVISIBLE
@@ -173,7 +188,6 @@ class ControlActivity : AppCompatActivity() {
                     stay_button.visibility = View.VISIBLE
                 }
 
-                delay(300)
             }
         }
     }
@@ -188,6 +202,8 @@ class ControlActivity : AppCompatActivity() {
     }
 
     fun stay(view: View) {
+        stopFlag = false
+
         throttle_slider.visibility = View.VISIBLE
         rudder_slider.visibility = View.VISIBLE
         joystickView.visibility = View.VISIBLE
