@@ -50,10 +50,6 @@ class MainActivity : AppCompatActivity() {
         Room.databaseBuilder(this, ListDatabase::class.java, "url_history")
             .allowMainThreadQueries().build().urlDatabase.insert(obj)
 
-        // in case we did not connect
-        // if statment
-        Toast.makeText(this, "connection is failed", 5).show()
-
         // in case we did connect
         val intent = Intent(this, ControlActivity::class.java)
         startActivity(intent)

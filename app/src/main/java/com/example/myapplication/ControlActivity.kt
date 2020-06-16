@@ -34,8 +34,10 @@ class ControlActivity : AppCompatActivity() {
     var prevElevator: Float = 0.0f
 
     var url: String = ""
-    var stopFlag = false
+    var stopflag: StopFlag = StopFlag()
     var status: Boolean? = false
+    var errorMassage: String = ""
+    var isGetImageSucced: Boolean = true
 
     @SuppressLint("WrongViewCast")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -137,11 +139,11 @@ class ControlActivity : AppCompatActivity() {
     fun checkStatus() {
         if (status == null) { // 10 seconds timeout case
             massage.text = "the server has failed"
-            stopFlag = true
+            stopflag.flag = true
         }
         if (status == false) { // couldn't send the values
             massage.text = "server problem accrued"
-            stopFlag = true
+            stopflag.flag = true
         }
     }
 
@@ -152,32 +154,27 @@ class ControlActivity : AppCompatActivity() {
 
     fun getImage() {
         var switch = 1
-        var stopFlag = false
         lifecycleScope.launch {
-            while (!stopFlag) {
-                var result = false
-                if(switch == 1){
-                    result = getScreenshot(flight_simulator_image, url)
-                } else if(switch == 2){
-                    result = getScreenshot(flight_simulator_image2, url)
-                } else if(switch == 3){
-                    result = getScreenshot(flight_simulator_image3, url)
-                } else if(switch == 4){
-                    result = getScreenshot(flight_simulator_image4, url)
-                } else if(switch == 5){
-                    result = getScreenshot(flight_simulator_image5, url)
-                } else if(switch == 6){
-                    result = getScreenshot(flight_simulator_image6, url)
+            while (!stopflag.flag) {
+                if (switch == 1) {
+                    getScreenshot(flight_simulator_image, url, stopflag, massage)
+                } else if (switch == 2) {
+                    getScreenshot(flight_simulator_image2, url, stopflag, massage)
+                } else if (switch == 3) {
+                    getScreenshot(flight_simulator_image3, url, stopflag, massage)
+                } else if (switch == 4) {
+                    getScreenshot(flight_simulator_image4, url, stopflag, massage)
+                } else if (switch == 5) {
+                    getScreenshot(flight_simulator_image5, url, stopflag, massage)
+                } else if (switch == 6) {
+                    getScreenshot(flight_simulator_image6, url, stopflag, massage)
                     switch = 0
                 }
-                switch++
-                if (!result) {
-                    stopFlag = true
-                }
 
+                switch++
                 delay(300)
 
-                if (stopFlag) { // TODO handle the returned result
+                if (stopflag.flag) { // TODO handle the returned result
                     throttle_slider.visibility = View.INVISIBLE
                     rudder_slider.visibility = View.INVISIBLE
                     joystickView.visibility = View.INVISIBLE
@@ -187,14 +184,11 @@ class ControlActivity : AppCompatActivity() {
                     back_button.visibility = View.VISIBLE
                     stay_button.visibility = View.VISIBLE
                 }
-
             }
         }
     }
 
     fun goHome(view: View) {
-        //Toast.makeText(this, "connections is unstable", 5.toInt()).show()
-
         finish()
 
         val intent = Intent(this, MainActivity::class.java)
@@ -202,8 +196,6 @@ class ControlActivity : AppCompatActivity() {
     }
 
     fun stay(view: View) {
-        stopFlag = false
-
         throttle_slider.visibility = View.VISIBLE
         rudder_slider.visibility = View.VISIBLE
         joystickView.visibility = View.VISIBLE
@@ -212,5 +204,9 @@ class ControlActivity : AppCompatActivity() {
         massage.visibility = View.INVISIBLE
         back_button.visibility = View.INVISIBLE
         stay_button.visibility = View.INVISIBLE
+
+        stopflag.flag = false
+
+        getImage()
     }
 }

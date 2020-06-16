@@ -1,9 +1,18 @@
 package com.example.myapplication
 
+import android.annotation.SuppressLint
+import android.app.ActivityManager
+import android.content.Context
+import android.content.Intent
+import android.service.voice.VoiceInteractionSession
 import android.util.Log
 import android.widget.ImageView
+import android.widget.TextView
+import androidx.core.graphics.drawable.toDrawable
+import androidx.room.Room
 import com.squareup.picasso.MemoryPolicy
 import com.squareup.picasso.Picasso
+import kotlinx.android.synthetic.main.activity_control.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.json.JSONException
@@ -14,15 +23,20 @@ import java.io.OutputStreamWriter
 import java.net.HttpURLConnection
 import java.net.URL
 
-fun getScreenshot(imageView: ImageView, url: String): Boolean {
-    //TODO check fail
-    val token = (Math.random()*10000000000).toInt()
-    val p = Picasso.get().load(url + "/screenshot")
+fun getScreenshot(imageView: ImageView, url: String, flag: StopFlag, massage: TextView) {
+    Picasso.get().load(url + "/screenshot")
+        .into(imageView, object : com.squareup.picasso.Callback {
+            override fun onSuccess() {
 
-    p.error(R.drawable.vertical_slide).memoryPolicy(MemoryPolicy.NO_CACHE).noFade().into(imageView)
-    return true
+            }
+
+            @SuppressLint("SetTextI18n")
+            override fun onError(e: java.lang.Exception?) {
+                flag.flag = true
+                massage.text = "connection is failed"
+            }
+        })
 }
-
 
 suspend fun postCommand(
     aileron: Double,
@@ -31,7 +45,7 @@ suspend fun postCommand(
     throttle: Double
 ): Boolean {
     try {
-        val result = withContext(Dispatchers.IO) {
+        withContext(Dispatchers.IO) {
 
             val url = URL("http://10.0.2.2:65011/api/command")
             // 1. create HttpURLConnection
