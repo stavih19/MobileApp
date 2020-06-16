@@ -16,8 +16,10 @@ import java.net.URL
 
 fun getScreenshot(imageView: ImageView, url: String): Boolean {
     //TODO check fail
-    val token = (Math.random()*100000).toInt()
-    Picasso.get().load(url + "/screenshot?" +token).noFade().into(imageView)
+    val token = (Math.random()*10000000000).toInt()
+    val p = Picasso.get().load(url + "/screenshot")
+
+    p.error(R.drawable.vertical_slide).memoryPolicy(MemoryPolicy.NO_CACHE).noFade().into(imageView)
     return true
 }
 
