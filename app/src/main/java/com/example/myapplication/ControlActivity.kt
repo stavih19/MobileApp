@@ -174,7 +174,7 @@ class ControlActivity : AppCompatActivity() {
                 switch++
                 delay(300)
 
-                if (stopflag.flag) { // TODO handle the returned result
+                if (stopflag.flag) {
                     throttle_slider.visibility = View.INVISIBLE
                     rudder_slider.visibility = View.INVISIBLE
                     joystickView.visibility = View.INVISIBLE
