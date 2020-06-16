@@ -8,68 +8,13 @@
 
     <ImageView
         android:id="@+id/flight_simulator_image"
-        android:layout_width="350dp"
-        android:layout_height="349dp"
+        android:layout_width="416dp"
+        android:layout_height="368dp"
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         tools:ignore="MissingConstraints"
-        tools:layout_editor_absoluteY="16dp"
-        tools:srcCompat="@tools:sample/avatars" />
-
-    <ImageView
-        android:id="@+id/flight_simulator_image2"
-        android:layout_width="350dp"
-        android:layout_height="349dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginRight="16dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        tools:ignore="MissingConstraints"
-        tools:layout_editor_absoluteY="16dp"
-        tools:srcCompat="@tools:sample/avatars" />
-
-    <ImageView
-        android:id="@+id/flight_simulator_image3"
-        android:layout_width="350dp"
-        android:layout_height="349dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginRight="16dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        tools:ignore="MissingConstraints"
-        tools:layout_editor_absoluteY="16dp"
-        tools:srcCompat="@tools:sample/avatars" />
-
-    <ImageView
-        android:id="@+id/flight_simulator_image4"
-        android:layout_width="350dp"
-        android:layout_height="349dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginRight="16dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        tools:ignore="MissingConstraints"
-        tools:layout_editor_absoluteY="16dp"
-        tools:srcCompat="@tools:sample/avatars" />
-
-    <ImageView
-        android:id="@+id/flight_simulator_image5"
-        android:layout_width="350dp"
-        android:layout_height="349dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginRight="16dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        tools:ignore="MissingConstraints"
-        tools:layout_editor_absoluteY="16dp"
-        tools:srcCompat="@tools:sample/avatars" />
-
-    <ImageView
-        android:id="@+id/flight_simulator_image6"
-        android:layout_width="350dp"
-        android:layout_height="349dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginRight="16dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        tools:ignore="MissingConstraints"
-        tools:layout_editor_absoluteY="16dp"
+        tools:layout_editor_absoluteY="3dp"
         tools:srcCompat="@tools:sample/avatars" />
 
     <com.ramotion.fluidslider.FluidSlider

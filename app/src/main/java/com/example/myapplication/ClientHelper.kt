@@ -1,8 +1,11 @@
 package com.example.myapplication
 
+import android.R
+import android.graphics.drawable.Drawable
 import android.util.Log
 import android.widget.ImageView
 import com.squareup.picasso.MemoryPolicy
+import com.squareup.picasso.NetworkPolicy
 import com.squareup.picasso.Picasso
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -14,12 +17,15 @@ import java.io.OutputStreamWriter
 import java.net.HttpURLConnection
 import java.net.URL
 
+
 fun getScreenshot(imageView: ImageView, url: String): Boolean {
     //TODO check fail
-    val token = (Math.random()*10000000000).toInt()
-    val p = Picasso.get().load(url + "/screenshot")
+    val token = (Math.random()*100000).toInt()
+    val p = Picasso.get().load(url + "/screenshot").memoryPolicy(MemoryPolicy.NO_CACHE).networkPolicy(
+        NetworkPolicy.NO_CACHE).noFade().placeholder(imageView.drawable).into(imageView)
 
-    p.error(R.drawable.vertical_slide).memoryPolicy(MemoryPolicy.NO_CACHE).noFade().into(imageView)
+    ControlActivity::getImage
+
     return true
 }
 

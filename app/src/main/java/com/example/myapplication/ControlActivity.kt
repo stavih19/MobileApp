@@ -75,7 +75,7 @@ class ControlActivity : AppCompatActivity() {
         val maxThrottle = 0
         val minThrottle = 1
         val totalThrotle = maxThrottle - minThrottle
-
+        val change = 0.5
         val slidervertical = findViewById<FluidSlider>(R.id.throttle_slider)
         slidervertical.colorBar = Color.BLUE
         slidervertical.positionListener = { pos ->
@@ -85,7 +85,7 @@ class ControlActivity : AppCompatActivity() {
                 newVal = ((newVal * 100).toInt().toDouble() / 100.0).toFloat()
             }
             slidervertical.bubbleText = newVal.toString()
-            if (abs(newThrottle - prevThrottle) >= 0.01) {
+            if (abs(newThrottle - prevThrottle) >= change) {
                 prevThrottle = newThrottle
                 sendValues()
                 checkStatus()
@@ -103,11 +103,11 @@ class ControlActivity : AppCompatActivity() {
             val newAlieron = (cos(inRadians) * strength / 100.0).toFloat()
             val newElevator = (sin(inRadians) * strength / 100.0).toFloat()
             var sendFlag = false
-            if (abs(prevAliaron - newAlieron) >= 0.01) {
+            if (abs(prevAliaron - newAlieron) >= change) {
                 prevAliaron = newAlieron
                 sendFlag = true
             }
-            if (abs(prevElevator - newElevator) >= 0.01) {
+            if (abs(prevElevator - newElevator) >= change) {
                 prevElevator = newElevator
                 sendFlag = true
             }
@@ -155,27 +155,15 @@ class ControlActivity : AppCompatActivity() {
         var stopFlag = false
         lifecycleScope.launch {
             while (!stopFlag) {
+
                 var result = false
-                if(switch == 1){
-                    result = getScreenshot(flight_simulator_image, url)
-                } else if(switch == 2){
-                    result = getScreenshot(flight_simulator_image2, url)
-                } else if(switch == 3){
-                    result = getScreenshot(flight_simulator_image3, url)
-                } else if(switch == 4){
-                    result = getScreenshot(flight_simulator_image4, url)
-                } else if(switch == 5){
-                    result = getScreenshot(flight_simulator_image5, url)
-                } else if(switch == 6){
-                    result = getScreenshot(flight_simulator_image6, url)
-                    switch = 0
-                }
-                switch++
+                result = getScreenshot(flight_simulator_image, url)
+
                 if (!result) {
                     stopFlag = true
                 }
 
-                delay(300)
+                delay(500)
 
                 if (stopFlag) { // TODO handle the returned result
                     throttle_slider.visibility = View.INVISIBLE
