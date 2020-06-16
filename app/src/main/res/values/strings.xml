@@ -3,4 +3,10 @@
     <string name="type_url">Type URL…</string>
     <string name="button">Button</string>
     <string name="delete">Delete</string>
+    <string name="thre_server_failed_n_go_to_connect_page">Thre server failed\n go to Connect page</string>
+    <string name="go_to_connect_page">go to Connect page</string>
+    <string name="go_home">Go Home</string>
+    <string name="the_server_failed_ngo_home">The server failed\ngo home</string>
+    <string name="keep_trying">keep trying</string>
+    <string name="todo">TODO</string>
 </resources>

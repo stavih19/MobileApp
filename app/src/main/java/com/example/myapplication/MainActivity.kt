@@ -1,5 +1,6 @@
 package com.example.myapplication
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -7,6 +8,7 @@ import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.ListView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import androidx.room.Room
 import kotlinx.android.synthetic.main.activity_control.*
@@ -36,13 +38,11 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    @SuppressLint("WrongConstant", "ShowToast")
     fun tryConnect(view: View) {
         val newUrl = findViewById<TextView>(R.id.urlinput)
         val obj = UrlAddressList()
         obj.url = newUrl.text.toString()
-
-        var conncetHistory = Room.databaseBuilder(this, ListDatabase::class.java, "url_history")
-            .allowMainThreadQueries().build().urlDatabase.getLastFive()
 
         Room.databaseBuilder(this, ListDatabase::class.java, "url_history")
             .allowMainThreadQueries().build().urlDatabase.deleteByUrl(obj.url)
@@ -50,12 +50,16 @@ class MainActivity : AppCompatActivity() {
         Room.databaseBuilder(this, ListDatabase::class.java, "url_history")
             .allowMainThreadQueries().build().urlDatabase.insert(obj)
 
+        // in case we did not connect
+        // if statment
+        Toast.makeText(this, "connection is failed", 5).show()
+
         // in case we did connect
         val intent = Intent(this, ControlActivity::class.java)
         startActivity(intent)
     }
 
-    fun clearFiled(view: View): Unit {
+    fun clearFiled(view: View) {
         val url = findViewById<TextView>(R.id.urlinput)
         url.text = ""
     }

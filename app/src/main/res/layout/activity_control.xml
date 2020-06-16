@@ -10,13 +10,13 @@
         android:id="@+id/flight_simulator_image"
         android:layout_width="350dp"
         android:layout_height="349dp"
-        android:layout_marginEnd="20dp"
-        android:layout_marginRight="20dp"
-        android:contentDescription="TODO"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         tools:ignore="MissingConstraints"
         tools:layout_editor_absoluteY="16dp"
-        tools:srcCompat="@tools:sample/avatars" />
+        tools:srcCompat="@tools:sample/avatars"
+        android:contentDescription="@string/todo" />
 
     <com.ramotion.fluidslider.FluidSlider
         android:id="@+id/rudder_slider"
@@ -54,5 +54,45 @@
         app:JV_fixedCenter="false"
         app:layout_constraintBottom_toBottomOf="@+id/rudder_slider"
         app:layout_constraintStart_toStartOf="@+id/throttle_slider" />
+
+    <Button
+        android:id="@+id/back_button"
+        android:layout_width="137dp"
+        android:layout_height="49dp"
+        android:layout_marginStart="64dp"
+        android:layout_marginLeft="64dp"
+        android:onClick="goHome"
+        android:text="@string/go_home"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/massage"
+        android:layout_width="126dp"
+        android:layout_height="64dp"
+        android:layout_marginBottom="32dp"
+        android:text="@string/the_server_failed_ngo_home"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toTopOf="@+id/back_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/stay_button"
+        android:layout_width="140dp"
+        android:layout_height="54dp"
+        android:layout_marginEnd="64dp"
+        android:layout_marginRight="64dp"
+        android:onClick="stay"
+        android:text="@string/keep_trying"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.522"
+        app:layout_constraintStart_toEndOf="@+id/back_button"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
