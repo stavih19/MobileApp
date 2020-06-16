@@ -39,7 +39,6 @@ class ControlActivity : AppCompatActivity() {
     var errorMassage: String = ""
     var isGetImageSucced: Boolean = true
 
-    @SuppressLint("WrongViewCast")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_control)
@@ -130,7 +129,8 @@ class ControlActivity : AppCompatActivity() {
                 (prevAliaron * 100).toInt().toDouble() / 100.0,
                 (prevRudder * 100).toInt().toDouble() / 100.0,
                 (prevElevator * 100).toInt().toDouble() / 100.0,
-                (prevThrottle * 100).toInt().toDouble() / 100.0
+                (prevThrottle * 100).toInt().toDouble() / 100.0,
+                url
             )
         }
     }
@@ -157,17 +157,17 @@ class ControlActivity : AppCompatActivity() {
         lifecycleScope.launch {
             while (!stopflag.flag) {
                 if (switch == 1) {
-                    getScreenshot(flight_simulator_image, url, stopflag, massage)
+                    getScreenshot(flight_simulator_image, url, stopflag, massage, true)
                 } else if (switch == 2) {
-                    getScreenshot(flight_simulator_image2, url, stopflag, massage)
+                    getScreenshot(flight_simulator_image2, url, stopflag, massage, true)
                 } else if (switch == 3) {
-                    getScreenshot(flight_simulator_image3, url, stopflag, massage)
+                    getScreenshot(flight_simulator_image3, url, stopflag, massage, true)
                 } else if (switch == 4) {
-                    getScreenshot(flight_simulator_image4, url, stopflag, massage)
+                    getScreenshot(flight_simulator_image4, url, stopflag, massage, true)
                 } else if (switch == 5) {
-                    getScreenshot(flight_simulator_image5, url, stopflag, massage)
+                    getScreenshot(flight_simulator_image5, url, stopflag, massage, true)
                 } else if (switch == 6) {
-                    getScreenshot(flight_simulator_image6, url, stopflag, massage)
+                    getScreenshot(flight_simulator_image6, url, stopflag, massage, true)
                     switch = 0
                 }
 

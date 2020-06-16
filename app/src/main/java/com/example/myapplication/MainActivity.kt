@@ -12,6 +12,7 @@ import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import androidx.room.Room
 import kotlinx.android.synthetic.main.activity_control.*
+import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -50,9 +51,17 @@ class MainActivity : AppCompatActivity() {
         Room.databaseBuilder(this, ListDatabase::class.java, "url_history")
             .allowMainThreadQueries().build().urlDatabase.insert(obj)
 
-        // in case we did connect
-        val intent = Intent(this, ControlActivity::class.java)
-        startActivity(intent)
+        val stopFlag: StopFlag = StopFlag()
+        lifecycleScope.launch {
+            getScreenshot(fake_image, obj.url, stopFlag, fake_text, false)
+        }
+        Thread.sleep(100)
+        if (!stopFlag.flag) {
+            Toast.makeText(this, "Connection failed", Toast.LENGTH_SHORT).show()
+        } else {        // in case we did connect
+            val intent = Intent(this, ControlActivity::class.java)
+            startActivity(intent)
+        }
     }
 
     fun clearFiled(view: View) {

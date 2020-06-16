@@ -23,7 +23,13 @@ import java.io.OutputStreamWriter
 import java.net.HttpURLConnection
 import java.net.URL
 
-fun getScreenshot(imageView: ImageView, url: String, flag: StopFlag, massage: TextView) {
+fun getScreenshot(
+    imageView: ImageView,
+    url: String,
+    flag: StopFlag,
+    massage: TextView,
+    isConnect: Boolean
+) {
     Picasso.get().load(url + "/screenshot")
         .into(imageView, object : com.squareup.picasso.Callback {
             override fun onSuccess() {
@@ -42,12 +48,13 @@ suspend fun postCommand(
     aileron: Double,
     rudder: Double,
     elevator: Double,
-    throttle: Double
+    throttle: Double,
+    newUrl: String
 ): Boolean {
     try {
         withContext(Dispatchers.IO) {
 
-            val url = URL("http://10.0.2.2:65011/api/command")
+            val url = URL("$newUrl/api/command")
             // 1. create HttpURLConnection
             val conn = url.openConnection() as HttpURLConnection
             conn.requestMethod = "POST"
