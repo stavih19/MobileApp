@@ -1,21 +1,10 @@
 package com.example.myapplication
 
-import android.content.Context
-import android.graphics.BitmapFactory
-import android.net.ConnectivityManager
-import android.os.Bundle
 import android.util.Log
-import android.view.View
-import android.widget.EditText
 import android.widget.ImageView
-import android.widget.TextView
-import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.lifecycleScope
+import com.squareup.picasso.MemoryPolicy
 import com.squareup.picasso.Picasso
-import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.json.JSONException
 import org.json.JSONObject
@@ -27,7 +16,8 @@ import java.net.URL
 
 fun getScreenshot(imageView: ImageView, url: String): Boolean {
     //TODO check fail
-    Picasso.get().load(url + "/screenshot").into(imageView)
+    val token = (Math.random()*100000).toInt()
+    Picasso.get().load(url + "/screenshot?" +token).noFade().into(imageView)
     return true
 }
 

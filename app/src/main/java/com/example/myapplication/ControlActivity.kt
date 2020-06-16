@@ -120,7 +120,6 @@ class ControlActivity : AppCompatActivity() {
     @SuppressLint("WrongConstant", "ShowToast")
     fun sendValues() = lifecycleScope.launch {
         val status = withTimeoutOrNull(10000) {
-            delay(11000)
             postCommand(
                 (prevAliaron * 100).toInt().toDouble() / 100.0,
                 (prevRudder * 100).toInt().toDouble() / 100.0,
@@ -139,10 +138,26 @@ class ControlActivity : AppCompatActivity() {
     }
 
     fun getImage() {
+        var switch = 1
         var stopFlag = false
         lifecycleScope.launch {
             while (!stopFlag) {
-                val result = getScreenshot(flight_simulator_image, url)
+                var result = false
+                if(switch == 1){
+                    result = getScreenshot(flight_simulator_image, url)
+                } else if(switch == 2){
+                    result = getScreenshot(flight_simulator_image2, url)
+                } else if(switch == 3){
+                    result = getScreenshot(flight_simulator_image3, url)
+                } else if(switch == 4){
+                    result = getScreenshot(flight_simulator_image4, url)
+                } else if(switch == 5){
+                    result = getScreenshot(flight_simulator_image5, url)
+                } else if(switch == 6){
+                    result = getScreenshot(flight_simulator_image6, url)
+                    switch = 0
+                }
+                switch++
                 if (!result) {
                     stopFlag = true
                 }
@@ -158,7 +173,7 @@ class ControlActivity : AppCompatActivity() {
                     stay_button.visibility = View.VISIBLE
                 }
 
-                delay(250)
+                delay(300)
             }
         }
     }
