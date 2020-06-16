@@ -32,7 +32,12 @@ fun getScreenshot(imageView: ImageView, url: String): Boolean {
 }
 
 
-suspend fun postCommand(aileron:Double, rudder:Double, elevator:Double, throttle:Double): Boolean {
+suspend fun postCommand(
+    aileron: Double,
+    rudder: Double,
+    elevator: Double,
+    throttle: Double
+): Boolean {
     try {
         val result = withContext(Dispatchers.IO) {
 
@@ -43,7 +48,7 @@ suspend fun postCommand(aileron:Double, rudder:Double, elevator:Double, throttle
             conn.setRequestProperty("Content-Type", "application/json; charset=utf-8")
 
             // 2. build JSON object
-            val jsonObject = buidJsonObject(aileron, rudder,elevator,throttle)
+            val jsonObject = buidJsonObject(aileron, rudder, elevator, throttle)
             // 3. add JSON content to POST request body
             setPostRequestContent(conn, jsonObject)
 
@@ -54,14 +59,14 @@ suspend fun postCommand(aileron:Double, rudder:Double, elevator:Double, throttle
             conn.responseMessage + ""
         }
         return true
-    } catch(e:Exception) {
+    } catch (e: Exception) {
         return false
     }
-    return false
+    //return false
 }
 
 @Throws(JSONException::class)
-fun buidJsonObject(aileron:Double, rudder:Double, elevator:Double, throttle:Double)
+fun buidJsonObject(aileron: Double, rudder: Double, elevator: Double, throttle: Double)
         : JSONObject {
 
     val jsonObject = JSONObject()

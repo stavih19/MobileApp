@@ -34,6 +34,7 @@ class ControlActivity : AppCompatActivity() {
     var prevElevator: Float = 0.0f
 
     var url: String = ""
+    var stopFlag = false
 
     @SuppressLint("WrongViewCast")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -117,10 +118,9 @@ class ControlActivity : AppCompatActivity() {
         getImage()
     }
 
-    @SuppressLint("WrongConstant", "ShowToast")
+    @SuppressLint("WrongConstant", "ShowToast", "SetTextI18n")
     fun sendValues() = lifecycleScope.launch {
         val status = withTimeoutOrNull(10000) {
-            delay(11000)
             postCommand(
                 (prevAliaron * 100).toInt().toDouble() / 100.0,
                 (prevRudder * 100).toInt().toDouble() / 100.0,
@@ -128,8 +128,13 @@ class ControlActivity : AppCompatActivity() {
                 (prevThrottle * 100).toInt().toDouble() / 100.0
             )
         }
-        if (status == null) {
-            Toast.makeText(this@ControlActivity, "the server is delay", 5).show()
+        if (status == null) { // 10 seconds timeout case
+            massage.text = "the server has failed"
+            stopFlag = true
+        }
+        if (status == false) { // couldn't send the values
+            massage.text = "server problem accrued"
+            stopFlag = true
         }
     }
 
@@ -139,7 +144,6 @@ class ControlActivity : AppCompatActivity() {
     }
 
     fun getImage() {
-        var stopFlag = false
         lifecycleScope.launch {
             while (!stopFlag) {
                 val result = getScreenshot(flight_simulator_image, url)
@@ -147,20 +151,24 @@ class ControlActivity : AppCompatActivity() {
                     stopFlag = true
                 }
 
-                if (stopFlag) { // TODO handle the returned result
-                    throttle_slider.visibility = View.INVISIBLE
-                    rudder_slider.visibility = View.INVISIBLE
-                    joystickView.visibility = View.INVISIBLE
-                    flight_simulator_image.visibility = View.INVISIBLE
-
-                    massage.visibility = View.VISIBLE
-                    back_button.visibility = View.VISIBLE
-                    stay_button.visibility = View.VISIBLE
-                }
-
                 delay(250)
+
+                if (stopFlag) { // TODO handle the returned result
+                    serverTimeOut()
+                }
             }
         }
+    }
+
+    fun serverTimeOut() {
+        throttle_slider.visibility = View.INVISIBLE
+        rudder_slider.visibility = View.INVISIBLE
+        joystickView.visibility = View.INVISIBLE
+        flight_simulator_image.visibility = View.INVISIBLE
+
+        massage.visibility = View.VISIBLE
+        back_button.visibility = View.VISIBLE
+        stay_button.visibility = View.VISIBLE
     }
 
     fun goHome(view: View) {
@@ -173,6 +181,8 @@ class ControlActivity : AppCompatActivity() {
     }
 
     fun stay(view: View) {
+        stopFlag = false
+
         throttle_slider.visibility = View.VISIBLE
         rudder_slider.visibility = View.VISIBLE
         joystickView.visibility = View.VISIBLE
