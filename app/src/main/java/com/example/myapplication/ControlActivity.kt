@@ -117,7 +117,6 @@ class ControlActivity : AppCompatActivity() {
             }
         }
 
-
         // start the endless loop
         getImage()
     }
