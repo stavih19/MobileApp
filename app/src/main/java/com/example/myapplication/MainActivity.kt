@@ -10,12 +10,9 @@ import android.widget.ArrayAdapter
 import android.widget.ListView
 import android.widget.TextView
 import android.widget.Toast
-import androidx.lifecycle.lifecycleScope
 import androidx.room.Room
 import com.google.gson.GsonBuilder
 import kotlinx.android.synthetic.main.activity_control.*
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
@@ -25,28 +22,10 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 
 class MainActivity : AppCompatActivity() {
+    var url: String = ""
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
         // insert into the history list
         val list = findViewById<ListView>(R.id.historyList)
@@ -60,8 +39,8 @@ class MainActivity : AppCompatActivity() {
             ArrayAdapter(this@MainActivity, android.R.layout.simple_list_item_1, conncetHistory)
         list.adapter = adapter
         list.setOnItemClickListener { parent, view, position, id ->
-            val url = findViewById<TextView>(R.id.urlinput)
-            url.text = list.getItemAtPosition(position).toString()
+            val textViewUrl = findViewById<TextView>(R.id.urlinput)
+            textViewUrl.text = list.getItemAtPosition(position).toString()
         }
 
     }
@@ -71,6 +50,7 @@ class MainActivity : AppCompatActivity() {
         val newUrl = findViewById<TextView>(R.id.urlinput)
         val obj = UrlAddressList()
         obj.url = newUrl.text.toString()
+        url = newUrl.text.toString()
 
         Room.databaseBuilder(this, ListDatabase::class.java, "url_history")
             .allowMainThreadQueries().build().urlDatabase.deleteByUrl(obj.url)
@@ -80,8 +60,36 @@ class MainActivity : AppCompatActivity() {
 
         // in case we did not connect
         // if statment
-        Toast.makeText(this, "connection is failed", 5).show()
+        httpGetImage()
 
+
+    }
+
+    private fun failedToSend(message: String) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+    }
+
+    fun httpGetImage() {
+        val gson = GsonBuilder()
+            .setLenient()
+            .create()
+        val retrofit = Retrofit.Builder()
+            .baseUrl("$url/")
+            .addConverterFactory(GsonConverterFactory.create(gson))
+            .build()
+        val api = retrofit.create(Api::class.java)
+        val body = api.getImg().enqueue(object : Callback<ResponseBody> {
+            override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+                changeToControlActivity()
+            }
+
+            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                failedToSend("error get first image")
+            }
+        })
+    }
+
+    private fun changeToControlActivity() {
         // in case we did connect
         val intent = Intent(this, ControlActivity::class.java)
         startActivity(intent)

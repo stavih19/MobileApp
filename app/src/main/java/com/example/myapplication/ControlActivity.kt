@@ -4,34 +4,31 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.graphics.BitmapFactory
 import android.graphics.Color
-import android.media.Image
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.View
-import android.widget.ImageView
 import android.widget.Toast
-import androidx.core.view.isGone
-import androidx.core.view.isInvisible
-import androidx.lifecycle.lifecycleScope
+import androidx.appcompat.app.AppCompatActivity
 import androidx.room.Room
 import com.google.gson.GsonBuilder
 import com.ramotion.fluidslider.FluidSlider
 import io.github.controlwear.virtual.joystick.android.JoystickView
 import kotlinx.android.synthetic.main.activity_control.*
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.lang.Exception
+import java.net.ProtocolException
 import kotlin.math.PI
 import kotlin.math.abs
 import kotlin.math.cos
 import kotlin.math.sin
-import kotlin.reflect.KParameter
 
 class ControlActivity : AppCompatActivity() {
     var prevThrottle: Float = 0.0f
@@ -127,16 +124,37 @@ class ControlActivity : AppCompatActivity() {
         getImage()
     }
 
-    @SuppressLint("WrongConstant", "ShowToast", "SetTextI18n")
-    fun sendValues() = lifecycleScope.launch {
-        status = withTimeoutOrNull(10000) {
-            postCommand(
-                (prevAliaron * 100).toInt().toDouble() / 100.0,
-                (prevRudder * 100).toInt().toDouble() / 100.0,
-                (prevElevator * 100).toInt().toDouble() / 100.0,
-                (prevThrottle * 100).toInt().toDouble() / 100.0
-            )
+    fun sendValues() {
+        CoroutineScope(IO).launch {
+            val gson = GsonBuilder()
+                .setLenient()
+                .create()
+            val retrofit = Retrofit.Builder()
+                .baseUrl("$url/")
+                .addConverterFactory(GsonConverterFactory.create(gson))
+                .build()
+            val api = retrofit.create(Api::class.java)
+            val body = api.postCommand(
+                Command(
+                    (prevAliaron * 100).toInt().toDouble() / 100.0,
+                    (prevRudder * 100).toInt().toDouble() / 100.0,
+                    (prevElevator * 100).toInt().toDouble() / 100.0,
+                    (prevThrottle * 100).toInt().toDouble() / 100.0
+                )
+            ).enqueue(object : Callback<Command> {
+                override fun onResponse(call: Call<Command>, response: Response<Command>) {
+
+                }
+
+                override fun onFailure(call: Call<Command>, t: Throwable) {
+                    failedToSend("error post command")
+                }
+            })
         }
+    }
+
+    private fun failedToSend(message: String) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 
     @SuppressLint("SetTextI18n")
@@ -156,43 +174,29 @@ class ControlActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
-    fun getImage() {
-        var switch = 1
-        var stopFlag = false
-        CoroutineScope(IO).launch {
-            while (!stopFlag) {
-
-                var result = true
-//                result = getScreenshot(flight_simulator_image, url)
-
-                val gson = GsonBuilder()
-                    .setLenient()
-                    .create()
-                val retrofit = Retrofit.Builder()
-                    .baseUrl("$url/")
-                    .addConverterFactory(GsonConverterFactory.create(gson))
-                    .build()
-                val api = retrofit.create(Api::class.java)
-                val body = api.getImg().enqueue(object : Callback<ResponseBody> {
-                    override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>){
-                        val I = response?.body()?.byteStream()
-                        val B = BitmapFactory.decodeStream(I)
-                        runOnUiThread {
-                            flight_simulator_image.setImageBitmap(B)
-                        }
-                    }
-                    override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-
-                    }
-                })
-
-                if (!result) {
-                    stopFlag = true
+    fun httpGetImage() {
+        val gson = GsonBuilder()
+            .setLenient()
+            .create()
+        val retrofit = Retrofit.Builder()
+            .baseUrl("$url/")
+            .addConverterFactory(GsonConverterFactory.create(gson))
+            .build()
+        val api = retrofit.create(Api::class.java)
+        val body = api.getImg().enqueue(object : Callback<ResponseBody> {
+            override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+                val I = response?.body()?.byteStream()
+                val B = BitmapFactory.decodeStream(I)
+                runOnUiThread {
+                    flight_simulator_image.setImageBitmap(B)
                 }
+            }
 
-                delay(500)
-
-                if (stopFlag) { // TODO handle the returned result
+            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                try{
+                    val a=t as ProtocolException
+                    failedToSend("protocol error")
+                } catch (e: Exception){
                     throttle_slider.visibility = View.INVISIBLE
                     rudder_slider.visibility = View.INVISIBLE
                     joystickView.visibility = View.INVISIBLE
@@ -201,23 +205,29 @@ class ControlActivity : AppCompatActivity() {
                     massage.visibility = View.VISIBLE
                     back_button.visibility = View.VISIBLE
                     stay_button.visibility = View.VISIBLE
+                    massage.text = "Error: from server"
+                    stopFlag = true
                 }
+            }
+        })
+    }
 
+    fun getImage() {
+        CoroutineScope(IO).launch {
+            while (!stopFlag) {
+                httpGetImage()
+                delay(300)
             }
         }
     }
 
     fun goHome(view: View) {
-        //Toast.makeText(this, "connections is unstable", 5.toInt()).show()
-
         finish()
-
         val intent = Intent(this, MainActivity::class.java)
         startActivity(intent)
     }
 
     fun stay(view: View) {
-        stopFlag = false
 
         throttle_slider.visibility = View.VISIBLE
         rudder_slider.visibility = View.VISIBLE
@@ -227,5 +237,8 @@ class ControlActivity : AppCompatActivity() {
         massage.visibility = View.INVISIBLE
         back_button.visibility = View.INVISIBLE
         stay_button.visibility = View.INVISIBLE
+
+        stopFlag = false
+        getImage()
     }
 }
