@@ -1,16 +1,15 @@
 package com.example.myapplication
 
 import android.content.Context
-import android.provider.CalendarContract
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import java.security.AccessControlContext
 
 @Database(entities = [UrlAddressList::class], version = 1, exportSchema = false)
 abstract class ListDatabase : RoomDatabase() {
     abstract val urlDatabase: UrlDB
 
+    // singleton get instance object
     companion object {
         @Volatile
         private var INSTANCE: ListDatabase? = null
@@ -25,6 +24,7 @@ abstract class ListDatabase : RoomDatabase() {
             }
         }
 
+        // create the first time
         private fun newDatabase(context: Context): ListDatabase {
             return Room.databaseBuilder(
                 context.applicationContext,
