@@ -11,6 +11,7 @@ import java.security.AccessControlContext
 abstract class ListDatabase : RoomDatabase() {
     abstract val urlDatabase: UrlDB
 
+    // singleton get instance object
     companion object {
         @Volatile
         private var INSTANCE: ListDatabase? = null
@@ -25,6 +26,7 @@ abstract class ListDatabase : RoomDatabase() {
             }
         }
 
+        // create the first time
         private fun newDatabase(context: Context): ListDatabase {
             return Room.databaseBuilder(
                 context.applicationContext,
