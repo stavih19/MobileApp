@@ -148,7 +148,7 @@ class ControlActivity : AppCompatActivity() {
                 )
             ).enqueue(object : Callback<Command> {
                 override fun onResponse(call: Call<Command>, response: Response<Command>) {
-                    
+
                 }
 
                 // in case there is failure in the post request
@@ -166,6 +166,7 @@ class ControlActivity : AppCompatActivity() {
 
     // when the user push back button
     override fun onBackPressed() {
+        finish()
         val intent = Intent(this, MainActivity::class.java)
         startActivity(intent)
     }
