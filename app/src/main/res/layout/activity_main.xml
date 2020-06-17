@@ -15,14 +15,14 @@
 
         android:layout_marginLeft="16dp"
         android:layout_marginBottom="16dp"
+        android:autofillHints=""
         android:ems="10"
         android:inputType="textPostalAddress"
-        android:text="@string/type_url"
         android:onClick="clearFiled"
+        android:text="@string/type_url"
         android:textAlignment="center"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        android:autofillHints=""
         tools:ignore="LabelFor" />
 
     <Button
@@ -33,7 +33,7 @@
         android:layout_marginRight="8dp"
         android:layout_marginBottom="16dp"
         android:onClick="tryConnect"
-        android:text="@string/button"
+        android:text="@string/Connect"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.554"
@@ -52,18 +52,5 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="MissingConstraints" />
-
-    <Button
-        android:id="@+id/delete_button"
-        android:layout_width="21dp"
-        android:layout_height="58dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginBottom="16dp"
-        android:onClick="deleteDB"
-        android:text="@string/delete"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/connectButton" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

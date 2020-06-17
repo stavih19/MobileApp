@@ -32,22 +32,29 @@ import kotlin.math.abs
 import kotlin.math.cos
 import kotlin.math.sin
 
+// the activity with the user can control the FlightSimulator
 class ControlActivity : AppCompatActivity() {
+    // initial the four parameters to post
     var prevThrottle: Float = 0.0f
     var prevRudder: Float = 0.0f
     var prevAliaron: Float = 0.0f
     var prevElevator: Float = 0.0f
 
+    // url address string
     var url: String = ""
-    var stopFlag = false
-    var status: Boolean? = false
 
-    @SuppressLint("WrongViewCast")
+    // stop flag for the get image function loop
+    var stopFlag = false
+
+    // minimum rate of difference to post vales
+    val change = 0.5
+
+    // constructor
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_control)
 
-        // get the url address
+        // get the url address from DB
         val connectHitsory = Room.databaseBuilder(this, ListDatabase::class.java, "url_history")
             .allowMainThreadQueries().build().urlDatabase.getLastFive()
         url = connectHitsory.get(0)
@@ -69,7 +76,6 @@ class ControlActivity : AppCompatActivity() {
             if (abs(newRudder - prevRudder) >= 0.02) {
                 prevRudder = newRudder
                 sendValues()
-                checkStatus()
             }
         }
         rudderSlider.position = 0.5f
@@ -80,7 +86,7 @@ class ControlActivity : AppCompatActivity() {
         val maxThrottle = 0
         val minThrottle = 1
         val totalThrotle = maxThrottle - minThrottle
-        val change = 0.5
+
         val slidervertical = findViewById<FluidSlider>(R.id.throttle_slider)
         slidervertical.colorBar = Color.BLUE
         slidervertical.positionListener = { pos ->
@@ -93,7 +99,6 @@ class ControlActivity : AppCompatActivity() {
             if (abs(newThrottle - prevThrottle) >= change) {
                 prevThrottle = newThrottle
                 sendValues()
-                checkStatus()
             }
 
         }
@@ -118,14 +123,14 @@ class ControlActivity : AppCompatActivity() {
             }
             if (sendFlag) {
                 sendValues()
-                checkStatus()
             }
         }
 
-        // start the endless loop
+        // start the "endless" loop
         getImage()
     }
 
+    // send the four values
     fun sendValues() {
         CoroutineScope(IO).launch {
             val gson = GsonBuilder()
@@ -136,7 +141,7 @@ class ControlActivity : AppCompatActivity() {
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .build()
             val api = retrofit.create(Api::class.java)
-            val body = api.postCommand(
+            api.postCommand(
                 Command(
                     (prevAliaron * 100).toInt().toDouble() / 100.0,
                     (prevRudder * 100).toInt().toDouble() / 100.0,
@@ -150,6 +155,7 @@ class ControlActivity : AppCompatActivity() {
                     }
                 }
 
+                // in case there is failure in the post request
                 override fun onFailure(call: Call<Command>, t: Throwable) {
 //                    failedToSend("error post command")
                     onError("Error: Post command")
@@ -173,27 +179,19 @@ class ControlActivity : AppCompatActivity() {
 
     }
 
+    // display message to the user
     private fun failedToSend(message: String) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 
-    @SuppressLint("SetTextI18n")
-    fun checkStatus() {
-        if (status == null) { // 10 seconds timeout case
-            massage.text = "Timeout response from server (10 seconds)"
-            stopFlag = true
-        }
-        if (status == false) { // couldn't send the values
-            massage.text = "Server connection problem occurred"
-            stopFlag = true
-        }
-    }
-
+    // when the user push back button
     override fun onBackPressed() {
+        finish()
         val intent = Intent(this, MainActivity::class.java)
         startActivity(intent)
     }
 
+    // ask for image
     fun httpGetImage() {
         val gson = GsonBuilder()
             .setLenient()
@@ -203,9 +201,9 @@ class ControlActivity : AppCompatActivity() {
             .addConverterFactory(GsonConverterFactory.create(gson))
             .build()
         val api = retrofit.create(Api::class.java)
-        val body = api.getImg().enqueue(object : Callback<ResponseBody> {
+        api.getImg().enqueue(object : Callback<ResponseBody> {
             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
-                val I = response?.body()?.byteStream()
+                val I = response.body()?.byteStream()
                 val B = BitmapFactory.decodeStream(I)
                 runOnUiThread {
                     flight_simulator_image.setImageBitmap(B)
@@ -224,6 +222,7 @@ class ControlActivity : AppCompatActivity() {
         })
     }
 
+    // ask for image until something get wrong
     fun getImage() {
         CoroutineScope(Default).launch {
             while (!stopFlag) {
@@ -233,14 +232,15 @@ class ControlActivity : AppCompatActivity() {
         }
     }
 
+    // when the user want to go home page after some failure happen
     fun goHome(view: View) {
         finish()
         val intent = Intent(this, MainActivity::class.java)
         startActivity(intent)
     }
 
+    // when the user want to stay in the control page after some failure happen
     fun stay(view: View) {
-
         throttle_slider.visibility = View.VISIBLE
         rudder_slider.visibility = View.VISIBLE
         joystickView.visibility = View.VISIBLE
@@ -250,6 +250,7 @@ class ControlActivity : AppCompatActivity() {
         back_button.visibility = View.INVISIBLE
         stay_button.visibility = View.INVISIBLE
 
+        // start the "endless" loop again
         stopFlag = false
         getImage()
     }
