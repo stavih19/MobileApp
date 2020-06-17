@@ -21,6 +21,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeout
 import kotlinx.coroutines.withTimeoutOrNull
+import java.net.ProtocolException
 import kotlin.math.PI
 import kotlin.math.abs
 import kotlin.math.cos
@@ -155,7 +156,7 @@ class ControlActivity : AppCompatActivity() {
     fun getImage() {
         var switch = 1
         lifecycleScope.launch {
-            while (!stopflag.flag) {
+            while (stopflag.flag == false) {
                 if (switch == 1) {
                     getScreenshot(flight_simulator_image, url, stopflag, massage, true)
                 } else if (switch == 2) {
@@ -174,7 +175,7 @@ class ControlActivity : AppCompatActivity() {
                 switch++
                 delay(300)
 
-                if (stopflag.flag) {
+                if (stopflag.flag == true) {
                     throttle_slider.visibility = View.INVISIBLE
                     rudder_slider.visibility = View.INVISIBLE
                     joystickView.visibility = View.INVISIBLE

@@ -33,7 +33,7 @@ fun getScreenshot(
     Picasso.get().load(url + "/screenshot")
         .into(imageView, object : com.squareup.picasso.Callback {
             override fun onSuccess() {
-
+                flag.flag = false
             }
 
             @SuppressLint("SetTextI18n")
@@ -75,7 +75,6 @@ suspend fun postCommand(
     } catch (e: Exception) {
         return false
     }
-    //return false
 }
 
 @Throws(JSONException::class)

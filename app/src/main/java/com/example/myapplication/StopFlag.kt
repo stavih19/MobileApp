@@ -1,5 +1,5 @@
 package com.example.myapplication
 
 class StopFlag {
-    var flag: Boolean = false
+    var flag: Boolean? = false
 }

@@ -13,8 +13,13 @@ import androidx.lifecycle.lifecycleScope
 import androidx.room.Room
 import kotlinx.android.synthetic.main.activity_control.*
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.coroutines.android.awaitFrame
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
+import java.lang.Exception
+import java.net.ProtocolException
 
 
 class MainActivity : AppCompatActivity() {
@@ -37,10 +42,17 @@ class MainActivity : AppCompatActivity() {
             val url = findViewById<TextView>(R.id.urlinput)
             url.text = list.getItemAtPosition(position).toString()
         }
+
     }
 
     @SuppressLint("WrongConstant", "ShowToast")
     fun tryConnect(view: View) {
+        lifecycleScope.launch {
+            aaa()
+        }
+    }
+
+    suspend fun aaa() {
         val newUrl = findViewById<TextView>(R.id.urlinput)
         val obj = UrlAddressList()
         obj.url = newUrl.text.toString()
@@ -50,13 +62,14 @@ class MainActivity : AppCompatActivity() {
 
         Room.databaseBuilder(this, ListDatabase::class.java, "url_history")
             .allowMainThreadQueries().build().urlDatabase.insert(obj)
-
         val stopFlag: StopFlag = StopFlag()
         lifecycleScope.launch {
-            getScreenshot(fake_image, obj.url, stopFlag, fake_text, false)
+            stopFlag.flag = postCommand(0.0, 0.0, 0.0, 0.0, newUrl.text.toString())
+
+            //getScreenshot(fake_image, obj.url, stopFlag, fake_text, false)
         }
-        Thread.sleep(100)
-        if (!stopFlag.flag) {
+        delay(2000)
+        if (stopFlag.flag == false) {
             Toast.makeText(this, "Connection failed", Toast.LENGTH_SHORT).show()
         } else {        // in case we did connect
             val intent = Intent(this, ControlActivity::class.java)
