@@ -1,8 +1,6 @@
 package com.example.myapplication
 
-import android.annotation.SuppressLint
 import android.content.Intent
-import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.view.View
 import android.widget.ArrayAdapter
@@ -12,9 +10,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.room.Room
 import com.google.gson.GsonBuilder
-import okhttp3.OkHttpClient
 import okhttp3.ResponseBody
-import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -33,12 +29,14 @@ class MainActivity : AppCompatActivity() {
 
         // insert url list into the history list
         val list = findViewById<ListView>(R.id.historyList)
-        var conncetHistory = Room.databaseBuilder(this, ListDatabase::class.java, "url_history")
+        var conncetHistory = Room.databaseBuilder(
+            this, ListDatabase::class.java, "url_history")
             .allowMainThreadQueries().build().urlDatabase.getLastFive()
         conncetHistory = conncetHistory.asReversed()
         val adapter: ArrayAdapter<String>
         adapter =
-            ArrayAdapter(this@MainActivity, android.R.layout.simple_list_item_1, conncetHistory)
+            ArrayAdapter(this@MainActivity,
+                android.R.layout.simple_list_item_1, conncetHistory)
         list.adapter = adapter
         list.setOnItemClickListener { parent, view, position, id ->
             val textViewUrl = findViewById<TextView>(R.id.urlinput)
@@ -89,7 +87,6 @@ class MainActivity : AppCompatActivity() {
                             + " "+response.message() )
                 }
             }
-
             // in case we did not got an image
             override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
                 failedToSend("TCP FAILURE while trying to get first image")
@@ -114,7 +111,6 @@ class MainActivity : AppCompatActivity() {
     fun deleteDB(view: View) {
         Room.databaseBuilder(this, ListDatabase::class.java, "url_history")
             .allowMainThreadQueries().build().urlDatabase.deleteAll()
-
         finish()
         startActivity(intent)
     }

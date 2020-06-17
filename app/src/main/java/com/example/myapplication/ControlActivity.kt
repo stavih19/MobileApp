@@ -1,11 +1,9 @@
 package com.example.myapplication
 
-import android.annotation.SuppressLint
 import android.content.Intent
 import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.os.Bundle
-import android.support.v4.app.INotificationSideChannel
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -47,7 +45,7 @@ class ControlActivity : AppCompatActivity() {
     var stopFlag = false
 
     // minimum rate of difference to post vales
-    val change = 0.5
+    val change = 0.01
 
     // constructor
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -73,7 +71,7 @@ class ControlActivity : AppCompatActivity() {
                 newVal = ((newVal * 100).toInt().toDouble() / 100.0).toFloat()
             }
             rudderSlider.bubbleText = newVal.toString()
-            if (abs(newRudder - prevRudder) >= 0.02) {
+            if (abs(newRudder - prevRudder) >= change*2) {
                 prevRudder = newRudder
                 sendValues()
             }
@@ -134,12 +132,9 @@ class ControlActivity : AppCompatActivity() {
     fun sendValues() {
         CoroutineScope(IO).launch {
             val gson = GsonBuilder()
-                .setLenient()
-                .create()
-            val retrofit = Retrofit.Builder()
-                .baseUrl("$url/")
-                .addConverterFactory(GsonConverterFactory.create(gson))
-                .build()
+                .setLenient().create()
+            val retrofit = Retrofit.Builder().baseUrl("$url/")
+                .addConverterFactory(GsonConverterFactory.create(gson)).build()
             val api = retrofit.create(Api::class.java)
             api.postCommand(
                 Command(
@@ -154,12 +149,9 @@ class ControlActivity : AppCompatActivity() {
                         onError("Error: " + response.code() + " " + response.message())
                     }
                 }
-
                 // in case there is failure in the post request
                 override fun onFailure(call: Call<Command>, t: Throwable) {
-//                    failedToSend("error post command")
-                    onError("Error: Post command")
-
+                    failedToSend("Error: Post command")
                 }
             })
         }
@@ -194,12 +186,9 @@ class ControlActivity : AppCompatActivity() {
     // ask for image
     fun httpGetImage() {
         val gson = GsonBuilder()
-            .setLenient()
-            .create()
-        val retrofit = Retrofit.Builder()
-            .baseUrl("$url/")
-            .addConverterFactory(GsonConverterFactory.create(gson))
-            .build()
+            .setLenient().create()
+        val retrofit = Retrofit.Builder().baseUrl("$url/")
+            .addConverterFactory(GsonConverterFactory.create(gson)).build()
         val api = retrofit.create(Api::class.java)
         api.getImg().enqueue(object : Callback<ResponseBody> {
             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
@@ -209,14 +198,12 @@ class ControlActivity : AppCompatActivity() {
                     flight_simulator_image.setImageBitmap(B)
                 }
             }
-
             override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
                 try{
-                    val a=t as ProtocolException
+                    t as ProtocolException
                     failedToSend("Protocol error")
                 } catch (e: Exception){
                     onError("An error occurred while getting the image from the server")
-
                 }
             }
         })
@@ -233,23 +220,21 @@ class ControlActivity : AppCompatActivity() {
     }
 
     // when the user want to go home page after some failure happen
-    fun goHome(view: View) {
+    fun goHome(@Suppress("UNUSED_PARAMETER")view: View) {
         finish()
         val intent = Intent(this, MainActivity::class.java)
         startActivity(intent)
     }
 
     // when the user want to stay in the control page after some failure happen
-    fun stay(view: View) {
+    fun stay(@Suppress("UNUSED_PARAMETER")view: View) {
         throttle_slider.visibility = View.VISIBLE
         rudder_slider.visibility = View.VISIBLE
         joystickView.visibility = View.VISIBLE
         flight_simulator_image.visibility = View.VISIBLE
-
         massage.visibility = View.INVISIBLE
         back_button.visibility = View.INVISIBLE
         stay_button.visibility = View.INVISIBLE
-
         // start the "endless" loop again
         stopFlag = false
         getImage()
