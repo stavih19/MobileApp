@@ -5,6 +5,7 @@ import android.content.Intent
 import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.os.Bundle
+import android.support.v4.app.INotificationSideChannel
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -14,6 +15,7 @@ import com.ramotion.fluidslider.FluidSlider
 import io.github.controlwear.virtual.joystick.android.JoystickView
 import kotlinx.android.synthetic.main.activity_control.*
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers.Default
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -143,14 +145,32 @@ class ControlActivity : AppCompatActivity() {
                 )
             ).enqueue(object : Callback<Command> {
                 override fun onResponse(call: Call<Command>, response: Response<Command>) {
-
+                    if(!response.isSuccessful){
+                        onError("Error: " + response.code() + " " + response.message())
+                    }
                 }
 
                 override fun onFailure(call: Call<Command>, t: Throwable) {
-                    failedToSend("error post command")
+//                    failedToSend("error post command")
+                    onError("Error: Post command")
+
                 }
             })
         }
+    }
+
+    private fun onError(message: String) {
+        throttle_slider.visibility = View.INVISIBLE
+        rudder_slider.visibility = View.INVISIBLE
+        joystickView.visibility = View.INVISIBLE
+        flight_simulator_image.visibility = View.INVISIBLE
+
+        massage.visibility = View.VISIBLE
+        back_button.visibility = View.VISIBLE
+        stay_button.visibility = View.VISIBLE
+        massage.text = message
+        stopFlag = true
+
     }
 
     private fun failedToSend(message: String) {
@@ -160,11 +180,11 @@ class ControlActivity : AppCompatActivity() {
     @SuppressLint("SetTextI18n")
     fun checkStatus() {
         if (status == null) { // 10 seconds timeout case
-            massage.text = "the server has failed"
+            massage.text = "Timeout response from server (10 seconds)"
             stopFlag = true
         }
         if (status == false) { // couldn't send the values
-            massage.text = "server problem accrued"
+            massage.text = "Server connection problem occurred"
             stopFlag = true
         }
     }
@@ -195,25 +215,17 @@ class ControlActivity : AppCompatActivity() {
             override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
                 try{
                     val a=t as ProtocolException
-                    failedToSend("protocol error")
+                    failedToSend("Protocol error")
                 } catch (e: Exception){
-                    throttle_slider.visibility = View.INVISIBLE
-                    rudder_slider.visibility = View.INVISIBLE
-                    joystickView.visibility = View.INVISIBLE
-                    flight_simulator_image.visibility = View.INVISIBLE
+                    onError("An error occurred while getting the image from the server")
 
-                    massage.visibility = View.VISIBLE
-                    back_button.visibility = View.VISIBLE
-                    stay_button.visibility = View.VISIBLE
-                    massage.text = "Error: from server"
-                    stopFlag = true
                 }
             }
         })
     }
 
     fun getImage() {
-        CoroutineScope(IO).launch {
+        CoroutineScope(Default).launch {
             while (!stopFlag) {
                 httpGetImage()
                 delay(300)

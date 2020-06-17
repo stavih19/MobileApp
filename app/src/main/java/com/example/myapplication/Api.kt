@@ -9,7 +9,7 @@ import retrofit2.http.*
 
 
 interface Api {
-    @Headers("Connection: close")
+    @Headers("Connection:close")
     @GET("/screenshot")
     fun getImg(): Call<ResponseBody>
 

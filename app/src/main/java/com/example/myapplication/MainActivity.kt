@@ -2,18 +2,18 @@ package com.example.myapplication
 
 import android.annotation.SuppressLint
 import android.content.Intent
-import android.graphics.BitmapFactory
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.ListView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.room.Room
 import com.google.gson.GsonBuilder
-import kotlinx.android.synthetic.main.activity_control.*
+import okhttp3.OkHttpClient
 import okhttp3.ResponseBody
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -58,6 +58,15 @@ class MainActivity : AppCompatActivity() {
         Room.databaseBuilder(this, ListDatabase::class.java, "url_history")
             .allowMainThreadQueries().build().urlDatabase.insert(obj)
 
+        val gson = GsonBuilder()
+            .setLenient()
+            .create()
+        val retrofit = Retrofit.Builder()
+            .baseUrl("$url/")
+            .addConverterFactory(GsonConverterFactory.create(gson))
+            .build()
+        val api = retrofit.create(Api::class.java)
+
         // in case we did not connect
         // if statment
         httpGetImage()
@@ -70,6 +79,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun httpGetImage() {
+
         val gson = GsonBuilder()
             .setLenient()
             .create()
@@ -80,11 +90,16 @@ class MainActivity : AppCompatActivity() {
         val api = retrofit.create(Api::class.java)
         val body = api.getImg().enqueue(object : Callback<ResponseBody> {
             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
-                changeToControlActivity()
+                if(response.isSuccessful){
+                    changeToControlActivity()
+                } else{
+                    failedToSend("Error getting first image " + response.code()
+                            + " "+response.message() )
+                }
             }
 
             override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                failedToSend("error get first image")
+                failedToSend("TCP FAILURE while trying to get first image")
             }
         })
     }
