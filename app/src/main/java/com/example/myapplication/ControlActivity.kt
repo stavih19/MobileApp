@@ -48,6 +48,7 @@ class ControlActivity : AppCompatActivity() {
     // minimum rate of difference to post vales
     val change = 0.01
 
+
     // constructor
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
